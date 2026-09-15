@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">Landslide Warning</string>
+    <string name="welcome_back">WELCOME BACK</string>
+    <string name="sign_in_subtitle">Sign in to continue to a safer tomorrow</string>
+    <string name="email_or_phone">Email or Phone number</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_in">Sign In</string>
+    <string name="guest_demo">Continue as Guest Demo</string>
+    <string name="dont_have_account">Don\'t have an account ? Sign up</string>
+
+    <string name="nav_home">Home</string>
+    <string name="nav_map">Map</string>
+    <string name="nav_alerts">Alerts</string>
+    <string name="nav_reports">Reports</string>
+    <string name="nav_profile">Profile</string>
+
+    <string name="title_landslide">LANDSLIDE</string>
+    <string name="subtitle_early_warning">EARLY WARNING SYSTEM</string>
+    <string name="tagline">Monitor • Predict • Respond</string>
+
+    <string name="risk_level">Risk Level</string>
+    <string name="risk_score">Risk Score</string>
+    <string name="critical">Critical</string>
+    <string name="watch">Watch</string>
+    <string name="normal">Normal</string>
+    <string name="offline">Offline</string>
+
+    <string name="landslide_detected">LANDSLIDE DETECTED</string>
+    <string name="heavy_rainfall">Heavy Rainfall</string>
+    <string name="north_east_region">North East Region</string>
+
+    <string name="zone_details">Zone Details</string>
+    <string name="shap_explanation">View SHAP Explanation</string>
+    <string name="report_incident">Report Incident</string>
+    <string name="my_reports">My Reports</string>
+    <string name="offline_mode">Offline Mode</string>
+    <string name="sync_status">Sync Status</string>
+</resources>

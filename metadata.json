@@ -1,0 +1,6 @@
+{
+  "name": "Landslide Warning",
+  "description": "Native prototype for Landslide Early Warning System with risk telemetry, maps, alerts, and offline reporting.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

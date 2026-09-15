@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">ভূমিস্খলন সতৰ্কতা</string>
+    <string name="welcome_back">স্বাগতম</string>
+    <string name="sign_in_subtitle">সুৰক্ষিত ভৱিষ্যতৰ বাবে চাইন ইন কৰক</string>
+    <string name="email_or_phone">ইমেইল বা ফোন নম্বৰ</string>
+    <string name="password">পাছৱৰ্ড</string>
+    <string name="forgot_password">পাছৱৰ্ড পাহৰিলে?</string>
+    <string name="sign_up">চাইন আপ কৰক</string>
+    <string name="sign_in">চাইন ইন কৰক</string>
+    <string name="guest_demo">ডেমো মোডত প্ৰৱেশ কৰক</string>
+    <string name="dont_have_account">একাউণ্ট নাই? চাইন আপ কৰক</string>
+
+    <string name="nav_home">গৃহ</string>
+    <string name="nav_map">মানচিত্ৰ</string>
+    <string name="nav_alerts">সতৰ্কবাৰ্তা</string>
+    <string name="nav_reports">প্ৰতিবেদন</string>
+    <string name="nav_profile">প্ৰফাইল</string>
+
+    <string name="title_landslide">ভূমিস্খলন</string>
+    <string name="subtitle_early_warning">আগতীয়া সতৰ্কবাৰ্তা ব্যৱস্থা</string>
+    <string name="tagline">নিৰীক্ষণ • ভৱিষ্যদ্বাণী • সঁহাৰি</string>
+
+    <string name="risk_level">বিপদৰ মাত্ৰা</string>
+    <string name="risk_score">বিপদৰ স্ক\'ৰ</string>
+    <string name="critical">সংকটজনক</string>
+    <string name="watch">নজৰত</string>
+    <string name="normal">সাধাৰণ</string>
+    <string name="offline">অফলাইন</string>
+
+    <string name="landslide_detected">ভূমিস্খলন ধৰা পৰিছে</string>
+    <string name="heavy_rainfall">প্ৰৱল বৰষুণ</string>
+    <string name="north_east_region">উত্তৰ-পূব অঞ্চল</string>
+
+    <string name="zone_details">অঞ্চলৰ বিৱৰণ</string>
+    <string name="shap_explanation">SHAP ব্যাখ্যা চাওক</string>
+    <string name="report_incident">ঘটনা প্ৰতিবেদন দাখিল কৰক</string>
+    <string name="my_reports">মোৰ প্ৰতিবেদনসমূহ</string>
+    <string name="offline_mode">অফলাইন ম\'ড</string>
+    <string name="sync_status">চিঙ্ক স্থিতি</string>
+</resources>
