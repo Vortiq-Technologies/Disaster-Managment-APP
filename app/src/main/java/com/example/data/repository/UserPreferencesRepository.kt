@@ -23,6 +23,10 @@ class UserPreferencesRepository(context: Context) {
         MutableStateFlow(prefs.getBoolean(KEY_NOTIFICATIONS, true))
     val notificationsEnabled: StateFlow<Boolean> = _notificationsEnabled.asStateFlow()
 
+    private val _isDarkTheme =
+        MutableStateFlow(prefs.getBoolean(KEY_DARK_THEME, true))
+    val isDarkTheme: StateFlow<Boolean> = _isDarkTheme.asStateFlow()
+
     fun setOnboardingCompleted(completed: Boolean) {
         prefs.edit().putBoolean(KEY_ONBOARDING_COMPLETED, completed).apply()
         _isOnboardingCompleted.value = completed
@@ -38,9 +42,15 @@ class UserPreferencesRepository(context: Context) {
         _notificationsEnabled.value = enabled
     }
 
+    fun setDarkTheme(isDark: Boolean) {
+        prefs.edit().putBoolean(KEY_DARK_THEME, isDark).apply()
+        _isDarkTheme.value = isDark
+    }
+
     companion object {
         private const val KEY_ONBOARDING_COMPLETED = "key_onboarding_completed"
         private const val KEY_LANGUAGE = "key_language"
         private const val KEY_NOTIFICATIONS = "key_notifications"
+        private const val KEY_DARK_THEME = "key_dark_theme"
     }
 }

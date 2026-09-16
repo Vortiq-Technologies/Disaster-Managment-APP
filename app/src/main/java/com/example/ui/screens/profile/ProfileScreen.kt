@@ -23,8 +23,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.CloudSync
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.RestartAlt
@@ -55,6 +57,7 @@ import androidx.compose.ui.unit.sp
 import com.example.data.model.UserProfile
 import com.example.ui.components.AppStrings
 import com.example.ui.components.MountainLogo
+import com.example.ui.theme.AppTheme
 import com.example.ui.theme.DarkCanvas
 import com.example.ui.theme.DarkGlassBorder
 import com.example.ui.theme.DarkGlassCard
@@ -69,9 +72,11 @@ fun ProfileScreen(
     userProfile: UserProfile,
     isOffline: Boolean,
     notificationsEnabled: Boolean,
+    isDarkTheme: Boolean = true,
     currentLanguage: String,
     onToggleOffline: () -> Unit,
     onToggleNotifications: (Boolean) -> Unit,
+    onToggleTheme: (Boolean) -> Unit = {},
     onSelectLanguage: (String) -> Unit,
     onOpenSafetyGuidelines: () -> Unit,
     onResetOnboarding: () -> Unit
@@ -89,7 +94,7 @@ fun ProfileScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkCanvas)
+            .background(AppTheme.colors.canvas)
     ) {
         Column(
             modifier = Modifier
@@ -103,7 +108,7 @@ fun ProfileScreen(
                 text = "Officer Profile & Settings",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = AppTheme.colors.textPrimary
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -112,8 +117,8 @@ fun ProfileScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF10211A)),
-                border = androidx.compose.foundation.BorderStroke(1.dp, DarkGlassBorder)
+                colors = CardDefaults.cardColors(containerColor = AppTheme.colors.card),
+                border = androidx.compose.foundation.BorderStroke(1.dp, AppTheme.colors.cardBorder)
             ) {
                 Row(
                     modifier = Modifier
@@ -126,15 +131,15 @@ fun ProfileScreen(
                         modifier = Modifier
                             .size(56.dp)
                             .clip(CircleShape)
-                            .background(ForestGreenDark)
-                            .border(2.dp, EmeraldAccent, CircleShape),
+                            .background(AppTheme.colors.accentContainer)
+                            .border(2.dp, AppTheme.colors.accent, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "PS",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = EmeraldAccent
+                            color = AppTheme.colors.accent
                         )
                     }
 
@@ -145,23 +150,23 @@ fun ProfileScreen(
                             text = userProfile.name,
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = AppTheme.colors.textPrimary
                         )
                         Text(
                             text = userProfile.title,
                             fontSize = 12.sp,
-                            color = EmeraldAccent,
+                            color = AppTheme.colors.accent,
                             fontWeight = FontWeight.Medium
                         )
                         Text(
                             text = userProfile.department,
                             fontSize = 11.sp,
-                            color = Color.White.copy(alpha = 0.65f)
+                            color = AppTheme.colors.textSecondary
                         )
                         Text(
                             text = "ID: ${userProfile.officerId}",
                             fontSize = 10.sp,
-                            color = Color.White.copy(alpha = 0.5f)
+                            color = AppTheme.colors.textTertiary
                         )
                     }
                 }
@@ -174,7 +179,7 @@ fun ProfileScreen(
                 text = "App Settings & System Controls",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                color = EmeraldAccent
+                color = AppTheme.colors.accent
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -182,11 +187,11 @@ fun ProfileScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = DarkGlassCard),
-                border = androidx.compose.foundation.BorderStroke(1.dp, DarkGlassBorder)
+                colors = CardDefaults.cardColors(containerColor = AppTheme.colors.card),
+                border = androidx.compose.foundation.BorderStroke(1.dp, AppTheme.colors.cardBorder)
             ) {
                 Column(modifier = Modifier.padding(14.dp)) {
-                    // Offline Mode Toggle
+                    // Light Theme Mode Toggle (Requested feature)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -194,29 +199,47 @@ fun ProfileScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.WifiOff, contentDescription = null, tint = EmeraldAccent)
+                        Row(
+                            modifier = Modifier.weight(1f),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(CircleShape)
+                                    .background(AppTheme.colors.accentContainer),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = if (!isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
+                                    contentDescription = "Theme Mode",
+                                    tint = AppTheme.colors.accent,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
                                 Text(
-                                    text = "Simulate Offline Mode",
+                                    text = "Light Theme Mode",
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = Color.White
+                                    color = AppTheme.colors.textPrimary
                                 )
                                 Text(
-                                    text = if (isOffline) "Running offline (local database only)" else "Connected (simulated network relay)",
+                                    text = if (!isDarkTheme) "Clean Light theme enabled across all screens" else "Tactical Dark theme enabled",
                                     fontSize = 11.sp,
-                                    color = Color.White.copy(alpha = 0.6f)
+                                    color = AppTheme.colors.textSecondary
                                 )
                             }
                         }
                         Switch(
-                            checked = isOffline,
-                            onCheckedChange = { onToggleOffline() },
+                            checked = !isDarkTheme,
+                            onCheckedChange = { isLight -> onToggleTheme(!isLight) },
                             colors = SwitchDefaults.colors(
-                                checkedThumbColor = Color(0xFF003822),
-                                checkedTrackColor = EmeraldAccent
+                                checkedThumbColor = Color.White,
+                                checkedTrackColor = AppTheme.colors.accent,
+                                uncheckedThumbColor = AppTheme.colors.textSecondary,
+                                uncheckedTrackColor = AppTheme.colors.cardBorder
                             )
                         )
                     }
@@ -226,7 +249,68 @@ fun ProfileScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(1.dp)
-                            .background(Color.White.copy(alpha = 0.08f))
+                            .background(AppTheme.colors.divider)
+                    )
+
+                    // Offline Mode Toggle
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            modifier = Modifier.weight(1f),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(CircleShape)
+                                    .background(AppTheme.colors.accentContainer),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Default.WifiOff,
+                                    contentDescription = null,
+                                    tint = AppTheme.colors.accent,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = "Simulate Offline Mode",
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = AppTheme.colors.textPrimary
+                                )
+                                Text(
+                                    text = if (isOffline) "Running offline (local database only)" else "Connected (simulated network relay)",
+                                    fontSize = 11.sp,
+                                    color = AppTheme.colors.textSecondary
+                                )
+                            }
+                        }
+                        Switch(
+                            checked = isOffline,
+                            onCheckedChange = { onToggleOffline() },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = Color.White,
+                                checkedTrackColor = AppTheme.colors.accent,
+                                uncheckedThumbColor = AppTheme.colors.textSecondary,
+                                uncheckedTrackColor = AppTheme.colors.cardBorder
+                            )
+                        )
+                    }
+
+                    // Divider
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(1.dp)
+                            .background(AppTheme.colors.divider)
                     )
 
                     // Push Notifications Toggle
@@ -237,20 +321,36 @@ fun ProfileScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Notifications, contentDescription = null, tint = EmeraldAccent)
+                        Row(
+                            modifier = Modifier.weight(1f),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(CircleShape)
+                                    .background(AppTheme.colors.accentContainer),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Default.Notifications,
+                                    contentDescription = null,
+                                    tint = AppTheme.colors.accent,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
                                 Text(
                                     text = "Hazard Warning Alerts",
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = Color.White
+                                    color = AppTheme.colors.textPrimary
                                 )
                                 Text(
                                     text = "Send immediate Android push alerts on critical risk",
                                     fontSize = 11.sp,
-                                    color = Color.White.copy(alpha = 0.6f)
+                                    color = AppTheme.colors.textSecondary
                                 )
                             }
                         }
@@ -258,8 +358,10 @@ fun ProfileScreen(
                             checked = notificationsEnabled,
                             onCheckedChange = { onToggleNotifications(it) },
                             colors = SwitchDefaults.colors(
-                                checkedThumbColor = Color(0xFF003822),
-                                checkedTrackColor = EmeraldAccent
+                                checkedThumbColor = Color.White,
+                                checkedTrackColor = AppTheme.colors.accent,
+                                uncheckedThumbColor = AppTheme.colors.textSecondary,
+                                uncheckedTrackColor = AppTheme.colors.cardBorder
                             )
                         )
                     }
@@ -269,7 +371,7 @@ fun ProfileScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(1.dp)
-                            .background(Color.White.copy(alpha = 0.08f))
+                            .background(AppTheme.colors.divider)
                     )
 
                     // Language Selector
@@ -283,26 +385,39 @@ fun ProfileScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.Language, contentDescription = null, tint = EmeraldAccent)
+                                Box(
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .clip(CircleShape)
+                                        .background(AppTheme.colors.accentContainer),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        Icons.Default.Language,
+                                        contentDescription = null,
+                                        tint = AppTheme.colors.accent,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Column {
                                     Text(
                                         text = "Language / भाषा / ভাষা",
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.SemiBold,
-                                        color = Color.White
+                                        color = AppTheme.colors.textPrimary
                                     )
                                     Text(
                                         text = languageNames[currentLanguage] ?: "English",
                                         fontSize = 11.sp,
-                                        color = EmeraldAccent
+                                        color = AppTheme.colors.accent
                                     )
                                 }
                             }
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                                 contentDescription = null,
-                                tint = Color.White.copy(alpha = 0.5f),
+                                tint = AppTheme.colors.textTertiary,
                                 modifier = Modifier.size(14.dp)
                             )
                         }
@@ -332,7 +447,7 @@ fun ProfileScreen(
                 text = "Emergency Directives & Knowledge",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                color = EmeraldAccent
+                color = AppTheme.colors.accent
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -342,8 +457,8 @@ fun ProfileScreen(
                     .fillMaxWidth()
                     .clickable(onClick = onOpenSafetyGuidelines),
                 shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = DarkGlassCard),
-                border = androidx.compose.foundation.BorderStroke(1.dp, DarkGlassBorder)
+                colors = CardDefaults.cardColors(containerColor = AppTheme.colors.card),
+                border = androidx.compose.foundation.BorderStroke(1.dp, AppTheme.colors.cardBorder)
             ) {
                 Row(
                     modifier = Modifier
@@ -353,26 +468,39 @@ fun ProfileScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Shield, contentDescription = null, tint = RiskWatch)
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(RiskWatch.copy(alpha = 0.15f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.Default.Shield,
+                                contentDescription = null,
+                                tint = RiskWatch,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
                             Text(
                                 text = "Landslide Safety Guidelines",
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = AppTheme.colors.textPrimary
                             )
                             Text(
                                 text = "NDMA evacuation protocols, warning signs & shelters",
                                 fontSize = 11.sp,
-                                color = Color.White.copy(alpha = 0.65f)
+                                color = AppTheme.colors.textSecondary
                             )
                         }
                     }
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                         contentDescription = null,
-                        tint = Color.White.copy(alpha = 0.5f),
+                        tint = AppTheme.colors.textTertiary,
                         modifier = Modifier.size(14.dp)
                     )
                 }
@@ -386,8 +514,8 @@ fun ProfileScreen(
                     .fillMaxWidth()
                     .clickable(onClick = onResetOnboarding),
                 shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = DarkGlassCard),
-                border = androidx.compose.foundation.BorderStroke(1.dp, DarkGlassBorder)
+                colors = CardDefaults.cardColors(containerColor = AppTheme.colors.card),
+                border = androidx.compose.foundation.BorderStroke(1.dp, AppTheme.colors.cardBorder)
             ) {
                 Row(
                     modifier = Modifier
@@ -397,26 +525,39 @@ fun ProfileScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.RestartAlt, contentDescription = null, tint = Color.White.copy(alpha = 0.7f))
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(AppTheme.colors.cardBorder.copy(alpha = 0.3f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.Default.RestartAlt,
+                                contentDescription = null,
+                                tint = AppTheme.colors.textSecondary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
                             Text(
                                 text = "Restart Demo Walkthrough",
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Color.White
+                                color = AppTheme.colors.textPrimary
                             )
                             Text(
                                 text = "Return to initial Welcome/Onboarding screen",
                                 fontSize = 11.sp,
-                                color = Color.White.copy(alpha = 0.6f)
+                                color = AppTheme.colors.textSecondary
                             )
                         }
                     }
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                         contentDescription = null,
-                        tint = Color.White.copy(alpha = 0.5f),
+                        tint = AppTheme.colors.textTertiary,
                         modifier = Modifier.size(14.dp)
                     )
                 }
@@ -431,24 +572,25 @@ fun ProfileScreen(
             ) {
                 MountainLogo(
                     size = 32.dp,
-                    mountainColor = EmeraldAccent
+                    mountainColor = AppTheme.colors.accent,
+                    snowColor = if (isDarkTheme) Color.White else AppTheme.colors.canvas
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = "Landslide Early Warning System",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White.copy(alpha = 0.8f)
+                    color = AppTheme.colors.textPrimary
                 )
                 Text(
                     text = "Version 1.0.0-PROTOTYPE • Local Offline Engine",
                     fontSize = 10.sp,
-                    color = Color.White.copy(alpha = 0.45f)
+                    color = AppTheme.colors.textTertiary
                 )
                 Text(
                     text = "Designed for North-Eastern Himalayan States (Meghalaya, Sikkim, Nagaland, Mizoram)",
                     fontSize = 10.sp,
-                    color = Color.White.copy(alpha = 0.45f),
+                    color = AppTheme.colors.textTertiary,
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )
             }

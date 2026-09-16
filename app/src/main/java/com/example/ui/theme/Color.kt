@@ -16,9 +16,12 @@ val DarkGlassCard = Color(0xCC112019)
 val DarkGlassBorder = Color(0x33A7F3D0)
 
 // Light Canvas
-val LightCanvas = Color(0xFFF4F8F5)
+val LightCanvas = Color(0xFFF4F7F5)
 val LightSurface = Color(0xFFFFFFFF)
-val LightSurfaceElevated = Color(0xFFE8F1EC)
+val LightSurfaceElevated = Color(0xFFEAF1ED)
+val LightGlassCard = Color(0xF8FFFFFF)
+val LightGlassBorder = Color(0x331B6B48)
+val LightInputBg = Color(0xFFEFF5F1)
 
 // Risk Status Levels
 val RiskCritical = Color(0xFFE53935)

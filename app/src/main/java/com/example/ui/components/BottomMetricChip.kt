@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.data.model.SensorNode
+import com.example.ui.theme.AppTheme
 import com.example.ui.theme.DarkGlassBorder
 import com.example.ui.theme.DarkGlassCard
 import com.example.ui.theme.DarkSurfaceElevated
@@ -55,8 +56,8 @@ fun BottomMetricChip(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
-            .background(DarkGlassCard)
-            .border(1.dp, DarkGlassBorder, RoundedCornerShape(16.dp))
+            .background(AppTheme.colors.card.copy(alpha = if (AppTheme.colors.isDark) 0.85f else 0.95f))
+            .border(1.dp, AppTheme.colors.cardBorder, RoundedCornerShape(16.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 10.dp)
     ) {
@@ -67,13 +68,13 @@ fun BottomMetricChip(
                 modifier = Modifier
                     .size(34.dp)
                     .clip(CircleShape)
-                    .background(Color.White.copy(alpha = 0.12f)),
+                    .background(AppTheme.colors.accentContainer),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
-                    tint = Color.White,
+                    tint = AppTheme.colors.accent,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -85,14 +86,14 @@ fun BottomMetricChip(
                     text = title,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.White,
+                    color = AppTheme.colors.textPrimary,
                     maxLines = 1,
                     overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
                 Text(
                     text = subtitle,
                     fontSize = 11.sp,
-                    color = Color.White.copy(alpha = 0.75f),
+                    color = AppTheme.colors.textSecondary,
                     maxLines = 1,
                     overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
@@ -101,7 +102,7 @@ fun BottomMetricChip(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                 contentDescription = "Navigate",
-                tint = Color.White.copy(alpha = 0.6f),
+                tint = AppTheme.colors.textTertiary,
                 modifier = Modifier.size(12.dp)
             )
         }
@@ -124,8 +125,8 @@ fun NodeDetailDialog(
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = RoundedCornerShape(24.dp),
-            color = Color(0xFF102019),
-            border = androidx.compose.foundation.BorderStroke(1.dp, DarkGlassBorder),
+            color = AppTheme.colors.surface,
+            border = androidx.compose.foundation.BorderStroke(1.dp, AppTheme.colors.cardBorder),
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
@@ -141,12 +142,12 @@ fun NodeDetailDialog(
                             text = node.name,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = AppTheme.colors.textPrimary
                         )
                         Text(
                             text = "Telemetry Sensor Station",
                             fontSize = 12.sp,
-                            color = Color.White.copy(alpha = 0.6f)
+                            color = AppTheme.colors.textSecondary
                         )
                     }
 
@@ -216,12 +217,12 @@ fun NodeDetailDialog(
                     Text(
                         text = "Battery: ${node.batteryPercent}%  •  Signal: ${node.signalDbm} dBm",
                         fontSize = 11.sp,
-                        color = Color.White.copy(alpha = 0.65f)
+                        color = AppTheme.colors.textSecondary
                     )
                     Text(
                         text = node.lastUpdated,
                         fontSize = 11.sp,
-                        color = Color.White.copy(alpha = 0.65f)
+                        color = AppTheme.colors.textSecondary
                     )
                 }
 
@@ -234,12 +235,12 @@ fun NodeDetailDialog(
                     Button(
                         onClick = onDismiss,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.White.copy(alpha = 0.1f)
+                            containerColor = AppTheme.colors.surfaceElevated
                         ),
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Close", color = Color.White)
+                        Text("Close", color = AppTheme.colors.textPrimary)
                     }
 
                     Button(
@@ -248,12 +249,12 @@ fun NodeDetailDialog(
                             onViewZoneDetails()
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = EmeraldAccent
+                            containerColor = AppTheme.colors.accent
                         ),
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.weight(1.3f)
                     ) {
-                        Text("Zone Details", color = Color(0xFF003822), fontWeight = FontWeight.Bold)
+                        Text("Zone Details", color = AppTheme.colors.onAccent, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -271,10 +272,10 @@ private fun MetricBox(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(DarkSurfaceElevated)
+            .background(AppTheme.colors.surfaceElevated)
             .border(
                 1.dp,
-                if (highlight) RiskCritical.copy(alpha = 0.5f) else Color.White.copy(alpha = 0.08f),
+                if (highlight) RiskCritical.copy(alpha = 0.5f) else AppTheme.colors.cardBorder,
                 RoundedCornerShape(12.dp)
             )
             .padding(10.dp)
@@ -283,14 +284,14 @@ private fun MetricBox(
             Text(
                 text = label,
                 fontSize = 11.sp,
-                color = Color.White.copy(alpha = 0.65f)
+                color = AppTheme.colors.textSecondary
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = value,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (highlight) RiskCritical else Color.White
+                color = if (highlight) RiskCritical else AppTheme.colors.textPrimary
             )
         }
     }

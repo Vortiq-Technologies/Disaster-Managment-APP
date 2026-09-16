@@ -42,6 +42,7 @@ class LandslideViewModel(
     val selectedLanguage: StateFlow<String> = preferencesRepository.selectedLanguage
     val currentLanguage: StateFlow<String> = preferencesRepository.selectedLanguage
     val notificationsEnabled: StateFlow<Boolean> = preferencesRepository.notificationsEnabled
+    val isDarkTheme: StateFlow<Boolean> = preferencesRepository.isDarkTheme
 
     private val _userProfile = MutableStateFlow(com.example.data.model.UserProfile())
     val userProfile: StateFlow<com.example.data.model.UserProfile> = _userProfile.asStateFlow()
@@ -126,6 +127,10 @@ class LandslideViewModel(
 
     fun setNotificationsEnabled(enabled: Boolean) {
         preferencesRepository.setNotificationsEnabled(enabled)
+    }
+
+    fun setDarkTheme(isDark: Boolean) {
+        preferencesRepository.setDarkTheme(isDark)
     }
 
     fun toggleNotifications(enabled: Boolean) {

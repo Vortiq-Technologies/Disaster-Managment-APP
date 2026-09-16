@@ -23,7 +23,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.CrisisAlert
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Home
@@ -80,6 +80,7 @@ import com.example.ui.screens.profile.SafetyGuidelinesScreen
 import com.example.ui.screens.reports.CreateReportScreen
 import com.example.ui.screens.reports.ReportsScreen
 import com.example.ui.screens.zonedetails.ZoneDetailsScreen
+import com.example.ui.theme.AppTheme
 import com.example.ui.theme.DarkGlassBorder
 import com.example.ui.theme.DarkGlassCard
 import com.example.ui.theme.EmeraldAccent
@@ -94,12 +95,12 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     data object Home : Screen("home", "Home", Icons.Default.Home)
     data object Map : Screen("map", "Map", Icons.Default.Map)
     data object Alerts : Screen("alerts", "Alerts", Icons.Default.Notifications)
-    data object Reports : Screen("reports", "Reports", Icons.Default.Assignment)
+    data object Reports : Screen("reports", "Reports", Icons.AutoMirrored.Filled.Assignment)
     data object Profile : Screen("profile", "Profile", Icons.Default.Person)
     data object ZoneDetails : Screen("zone_details/{zoneId}", "Zone Details", Icons.Default.Explore) {
         fun createRoute(zoneId: String) = "zone_details/$zoneId"
     }
-    data object CreateReport : Screen("create_report", "Create Report", Icons.Default.Assignment)
+    data object CreateReport : Screen("create_report", "Create Report", Icons.AutoMirrored.Filled.Assignment)
     data object SafetyGuidelines : Screen("safety_guidelines", "Safety Directives", Icons.Default.Warning)
 }
 
@@ -113,6 +114,7 @@ fun LandslideApp(
     val isOnboardingCompleted by viewModel.isOnboardingCompleted.collectAsState()
     val isOffline by viewModel.isOfflineMode.collectAsState()
     val notificationsEnabled by viewModel.notificationsEnabled.collectAsState()
+    val isDarkTheme by viewModel.isDarkTheme.collectAsState()
     val currentLanguage by viewModel.currentLanguage.collectAsState()
     val currentScenario by viewModel.currentScenario.collectAsState()
 
@@ -161,16 +163,16 @@ fun LandslideApp(
             }
         },
         floatingActionButton = {
-            // Demo Scenario Switcher Floating Button (available across main tabs)
-            if (showBottomBar) {
+            // Demo Scenario Switcher Floating Button (available on tabs except Map to prevent obscuring map controls)
+            if (showBottomBar && currentRoute != Screen.Map.route) {
                 FloatingActionButton(
                     onClick = { showScenarioDialog = true },
-                    containerColor = Color(0xFF10261D),
-                    contentColor = EmeraldAccent,
+                    containerColor = AppTheme.colors.card,
+                    contentColor = AppTheme.colors.accent,
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier
                         .size(46.dp)
-                        .border(1.dp, EmeraldAccent.copy(alpha = 0.6f), RoundedCornerShape(16.dp))
+                        .border(1.dp, AppTheme.colors.accent.copy(alpha = 0.6f), RoundedCornerShape(16.dp))
                 ) {
                     Icon(
                         imageVector = Icons.Default.Science,
@@ -279,9 +281,11 @@ fun LandslideApp(
                     userProfile = userProfile,
                     isOffline = isOffline,
                     notificationsEnabled = notificationsEnabled,
+                    isDarkTheme = isDarkTheme,
                     currentLanguage = currentLanguage,
                     onToggleOffline = { viewModel.toggleOfflineMode() },
                     onToggleNotifications = { viewModel.toggleNotifications(it) },
+                    onToggleTheme = { viewModel.setDarkTheme(it) },
                     onSelectLanguage = { viewModel.setLanguage(it) },
                     onOpenSafetyGuidelines = {
                         navController.navigate(Screen.SafetyGuidelines.route)
@@ -321,8 +325,8 @@ fun LandslideApp(
             Dialog(onDismissRequest = { showScenarioDialog = false }) {
                 Surface(
                     shape = RoundedCornerShape(22.dp),
-                    color = Color(0xFF10211A),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, DarkGlassBorder),
+                    color = AppTheme.colors.surface,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, AppTheme.colors.cardBorder),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
@@ -334,7 +338,7 @@ fun LandslideApp(
                             Icon(
                                 imageVector = Icons.Default.Science,
                                 contentDescription = null,
-                                tint = EmeraldAccent,
+                                tint = AppTheme.colors.accent,
                                 modifier = Modifier.size(24.dp)
                             )
                             Spacer(modifier = Modifier.width(10.dp))
@@ -343,12 +347,12 @@ fun LandslideApp(
                                     text = "Demo Simulation Lab",
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White
+                                    color = AppTheme.colors.textPrimary
                                 )
                                 Text(
                                     text = "Instantly switch environment telemetry scenarios",
                                     fontSize = 11.sp,
-                                    color = Color.White.copy(alpha = 0.65f)
+                                    color = AppTheme.colors.textSecondary
                                 )
                             }
                         }
@@ -414,10 +418,12 @@ private fun ScenarioOptionCard(
             .fillMaxWidth()
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = if (isSelected) Color(0xFF163226) else DarkGlassCard),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected) AppTheme.colors.accentContainer.copy(alpha = 0.4f) else AppTheme.colors.card
+        ),
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
-            if (isSelected) EmeraldAccent else DarkGlassBorder
+            if (isSelected) AppTheme.colors.accent else AppTheme.colors.cardBorder
         )
     ) {
         Row(
@@ -438,12 +444,12 @@ private fun ScenarioOptionCard(
                     text = title,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = AppTheme.colors.textPrimary
                 )
                 Text(
                     text = subtitle,
                     fontSize = 11.sp,
-                    color = Color.White.copy(alpha = 0.7f)
+                    color = AppTheme.colors.textSecondary
                 )
             }
         }
@@ -460,11 +466,11 @@ private fun LandslideBottomNavigation(
     val strings = AppStrings.get(currentLanguage)
 
     NavigationBar(
-        containerColor = Color(0xF209140F),
+        containerColor = AppTheme.colors.bottomNavBg,
         tonalElevation = 8.dp,
         modifier = Modifier.border(
             width = 1.dp,
-            color = DarkGlassBorder,
+            color = AppTheme.colors.cardBorder,
             shape = RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp)
         )
     ) {
@@ -507,7 +513,7 @@ private fun LandslideBottomNavigation(
         NavigationBarItem(
             selected = currentRoute == Screen.Reports.route,
             onClick = { onNavigate(Screen.Reports.route) },
-            icon = { Icon(Icons.Default.Assignment, contentDescription = strings.navReports) },
+            icon = { Icon(Icons.AutoMirrored.Filled.Assignment, contentDescription = strings.navReports) },
             label = { Text(strings.navReports, fontSize = 11.sp) },
             colors = navigationItemColors()
         )
@@ -525,9 +531,9 @@ private fun LandslideBottomNavigation(
 
 @Composable
 private fun navigationItemColors() = NavigationBarItemDefaults.colors(
-    selectedIconColor = Color(0xFF003822),
-    selectedTextColor = EmeraldAccent,
-    indicatorColor = EmeraldAccent,
-    unselectedIconColor = Color.White.copy(alpha = 0.6f),
-    unselectedTextColor = Color.White.copy(alpha = 0.6f)
+    selectedIconColor = if (AppTheme.colors.isDark) Color(0xFF003822) else Color.White,
+    selectedTextColor = AppTheme.colors.accent,
+    indicatorColor = AppTheme.colors.accent,
+    unselectedIconColor = AppTheme.colors.textSecondary,
+    unselectedTextColor = AppTheme.colors.textSecondary
 )
