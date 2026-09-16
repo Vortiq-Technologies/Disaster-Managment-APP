@@ -17,18 +17,13 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.CloudUpload
-import androidx.compose.material.icons.filled.HourglassEmpty
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Report
 import androidx.compose.material.icons.filled.Sync
-import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -58,12 +53,8 @@ import androidx.compose.ui.window.Dialog
 import com.example.data.model.IncidentReport
 import com.example.data.model.ReportStatus
 import com.example.data.model.SyncState
-import com.example.ui.theme.DarkCanvas
-import com.example.ui.theme.DarkGlassBorder
-import com.example.ui.theme.DarkGlassCard
-import com.example.ui.theme.DarkSurfaceElevated
+import com.example.ui.theme.AppTheme
 import com.example.ui.theme.EmeraldAccent
-import com.example.ui.theme.RiskCritical
 import com.example.ui.theme.RiskNormal
 import com.example.ui.theme.RiskWatch
 
@@ -93,7 +84,7 @@ fun ReportsScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkCanvas)
+            .background(AppTheme.colors.canvas)
     ) {
         Column(
             modifier = Modifier
@@ -113,12 +104,12 @@ fun ReportsScreen(
                         text = "Field Incident Reports",
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = AppTheme.colors.textPrimary
                     )
                     Text(
                         text = "Community & sensor hazard reports",
                         fontSize = 12.sp,
-                        color = Color.White.copy(alpha = 0.7f)
+                        color = AppTheme.colors.textSecondary
                     )
                 }
 
@@ -156,29 +147,57 @@ fun ReportsScreen(
             // Tabs
             TabRow(
                 selectedTabIndex = selectedTab,
-                containerColor = Color(0xFF0F1E17),
-                contentColor = EmeraldAccent,
+                containerColor = AppTheme.colors.surfaceElevated,
+                contentColor = AppTheme.colors.accent,
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 Tab(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
-                    text = { Text("All (${reports.size})", fontSize = 12.sp) }
+                    text = {
+                        Text(
+                            text = "All (${reports.size})",
+                            fontSize = 12.sp,
+                            fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Normal,
+                            color = if (selectedTab == 0) AppTheme.colors.accent else AppTheme.colors.textSecondary
+                        )
+                    }
                 )
                 Tab(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    text = { Text("Review", fontSize = 12.sp) }
+                    text = {
+                        Text(
+                            text = "Review",
+                            fontSize = 12.sp,
+                            fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Normal,
+                            color = if (selectedTab == 1) AppTheme.colors.accent else AppTheme.colors.textSecondary
+                        )
+                    }
                 )
                 Tab(
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
-                    text = { Text("Verified", fontSize = 12.sp) }
+                    text = {
+                        Text(
+                            text = "Verified",
+                            fontSize = 12.sp,
+                            fontWeight = if (selectedTab == 2) FontWeight.Bold else FontWeight.Normal,
+                            color = if (selectedTab == 2) AppTheme.colors.accent else AppTheme.colors.textSecondary
+                        )
+                    }
                 )
                 Tab(
                     selected = selectedTab == 3,
                     onClick = { selectedTab = 3 },
-                    text = { Text("Resolved", fontSize = 12.sp) }
+                    text = {
+                        Text(
+                            text = "Resolved",
+                            fontSize = 12.sp,
+                            fontWeight = if (selectedTab == 3) FontWeight.Bold else FontWeight.Normal,
+                            color = if (selectedTab == 3) AppTheme.colors.accent else AppTheme.colors.textSecondary
+                        )
+                    }
                 )
             }
 
@@ -204,8 +223,8 @@ fun ReportsScreen(
         // Floating Action Button to Report Incident
         FloatingActionButton(
             onClick = onCreateReportClick,
-            containerColor = EmeraldAccent,
-            contentColor = Color(0xFF003822),
+            containerColor = AppTheme.colors.accent,
+            contentColor = AppTheme.colors.onAccent,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 24.dp, end = 20.dp)
@@ -229,8 +248,8 @@ fun ReportsScreen(
             Dialog(onDismissRequest = { showSyncModal = false }) {
                 Surface(
                     shape = RoundedCornerShape(20.dp),
-                    color = Color(0xFF10211A),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, DarkGlassBorder),
+                    color = AppTheme.colors.card,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, AppTheme.colors.cardBorder),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(20.dp)) {
@@ -240,7 +259,7 @@ fun ReportsScreen(
                             Icon(
                                 imageVector = Icons.Default.Sync,
                                 contentDescription = null,
-                                tint = EmeraldAccent,
+                                tint = AppTheme.colors.accent,
                                 modifier = Modifier.size(24.dp)
                             )
                             Spacer(modifier = Modifier.width(10.dp))
@@ -248,7 +267,7 @@ fun ReportsScreen(
                                 text = "Offline Data & Sync Queue",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = AppTheme.colors.textPrimary
                             )
                         }
 
@@ -257,7 +276,7 @@ fun ReportsScreen(
                         Text(
                             text = "Reports submitted without internet connectivity are securely stored in the local device vault and queued for automatic relay to disaster headquarters.",
                             fontSize = 12.sp,
-                            color = Color.White.copy(alpha = 0.8f),
+                            color = AppTheme.colors.textSecondary,
                             lineHeight = 16.sp
                         )
 
@@ -267,7 +286,7 @@ fun ReportsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(DarkSurfaceElevated)
+                                .background(AppTheme.colors.surfaceElevated)
                                 .padding(12.dp)
                         ) {
                             Column {
@@ -278,7 +297,7 @@ fun ReportsScreen(
                                     Text(
                                         text = "Queue Status",
                                         fontSize = 12.sp,
-                                        color = Color.White.copy(alpha = 0.7f)
+                                        color = AppTheme.colors.textSecondary
                                     )
                                     Text(
                                         text = if (isSyncing) "Syncing..." else if (pendingSyncCount > 0) "Pending ($pendingSyncCount)" else "Fully Synced",
@@ -296,8 +315,8 @@ fun ReportsScreen(
                                             .fillMaxWidth()
                                             .height(6.dp)
                                             .clip(RoundedCornerShape(3.dp)),
-                                        color = EmeraldAccent,
-                                        trackColor = Color.White.copy(alpha = 0.1f),
+                                        color = AppTheme.colors.accent,
+                                        trackColor = AppTheme.colors.cardBorder,
                                         strokeCap = StrokeCap.Round
                                     )
                                 }
@@ -312,11 +331,11 @@ fun ReportsScreen(
                         ) {
                             Button(
                                 onClick = { showSyncModal = false },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.1f)),
+                                colors = ButtonDefaults.buttonColors(containerColor = AppTheme.colors.surfaceElevated),
                                 shape = RoundedCornerShape(12.dp),
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text("Close", color = Color.White)
+                                Text("Close", color = AppTheme.colors.textPrimary)
                             }
 
                             Button(
@@ -324,13 +343,13 @@ fun ReportsScreen(
                                     onTriggerSync()
                                 },
                                 enabled = !isSyncing,
-                                colors = ButtonDefaults.buttonColors(containerColor = EmeraldAccent),
+                                colors = ButtonDefaults.buttonColors(containerColor = AppTheme.colors.accent),
                                 shape = RoundedCornerShape(12.dp),
                                 modifier = Modifier.weight(1.3f)
                             ) {
                                 Text(
                                     text = if (isSyncing) "Relaying..." else "Simulate Sync",
-                                    color = Color(0xFF003822),
+                                    color = AppTheme.colors.onAccent,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
@@ -359,8 +378,8 @@ private fun ReportCard(report: IncidentReport) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = DarkGlassCard),
-        border = androidx.compose.foundation.BorderStroke(1.dp, DarkGlassBorder)
+        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.card),
+        border = androidx.compose.foundation.BorderStroke(1.dp, AppTheme.colors.cardBorder)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -373,20 +392,20 @@ private fun ReportCard(report: IncidentReport) {
                         text = report.id,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        color = EmeraldAccent
+                        color = AppTheme.colors.accent
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
-                            .background(Color.White.copy(alpha = 0.08f))
+                            .background(AppTheme.colors.surfaceElevated)
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
                         Text(
                             text = report.incidentType.displayName,
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Medium,
-                            color = Color.White.copy(alpha = 0.85f)
+                            color = AppTheme.colors.textSecondary
                         )
                     }
                 }
@@ -395,7 +414,7 @@ private fun ReportCard(report: IncidentReport) {
                 Icon(
                     imageVector = syncIcon,
                     contentDescription = report.syncState.name,
-                    tint = if (report.syncState == SyncState.SYNCED) EmeraldAccent else RiskWatch,
+                    tint = if (report.syncState == SyncState.SYNCED) AppTheme.colors.accent else RiskWatch,
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -406,7 +425,7 @@ private fun ReportCard(report: IncidentReport) {
                 text = report.title,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = AppTheme.colors.textPrimary
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -414,7 +433,7 @@ private fun ReportCard(report: IncidentReport) {
             Text(
                 text = report.description,
                 fontSize = 12.sp,
-                color = Color.White.copy(alpha = 0.8f),
+                color = AppTheme.colors.textSecondary,
                 lineHeight = 16.sp
             )
 
@@ -429,14 +448,14 @@ private fun ReportCard(report: IncidentReport) {
                     Icon(
                         imageVector = Icons.Default.LocationOn,
                         contentDescription = null,
-                        tint = Color.White.copy(alpha = 0.6f),
+                        tint = AppTheme.colors.textTertiary,
                         modifier = Modifier.size(13.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = report.locationName,
                         fontSize = 11.sp,
-                        color = Color.White.copy(alpha = 0.65f)
+                        color = AppTheme.colors.textSecondary
                     )
                 }
 
@@ -444,7 +463,7 @@ private fun ReportCard(report: IncidentReport) {
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(statusColor.copy(alpha = 0.2f))
+                        .background(statusColor.copy(alpha = 0.18f))
                         .border(1.dp, statusColor, RoundedCornerShape(8.dp))
                         .padding(horizontal = 8.dp, vertical = 3.dp)
                 ) {
@@ -466,12 +485,12 @@ private fun ReportCard(report: IncidentReport) {
                 Text(
                     text = "Reporter: ${report.reporterName}",
                     fontSize = 10.sp,
-                    color = Color.White.copy(alpha = 0.5f)
+                    color = AppTheme.colors.textTertiary
                 )
                 Text(
                     text = report.timestamp,
                     fontSize = 10.sp,
-                    color = Color.White.copy(alpha = 0.5f)
+                    color = AppTheme.colors.textTertiary
                 )
             }
         }

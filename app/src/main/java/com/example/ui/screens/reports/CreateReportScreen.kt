@@ -32,8 +32,6 @@ import androidx.compose.material.icons.filled.Traffic
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -56,13 +54,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.data.model.IncidentReport
 import com.example.data.model.IncidentType
-import com.example.ui.theme.DarkCanvas
-import com.example.ui.theme.DarkGlassBorder
-import com.example.ui.theme.DarkGlassCard
-import com.example.ui.theme.DarkSurfaceElevated
+import com.example.ui.theme.AppTheme
 import com.example.ui.theme.EmeraldAccent
-import com.example.ui.theme.RiskCritical
-import com.example.ui.theme.RiskNormal
 import com.example.ui.theme.RiskWatch
 
 @Composable
@@ -91,7 +84,7 @@ fun CreateReportScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkCanvas)
+            .background(AppTheme.colors.canvas)
     ) {
         Column(
             modifier = Modifier
@@ -110,13 +103,13 @@ fun CreateReportScreen(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(DarkGlassCard)
-                        .border(1.dp, DarkGlassBorder, CircleShape)
+                        .background(AppTheme.colors.card)
+                        .border(1.dp, AppTheme.colors.cardBorder, CircleShape)
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.White
+                        tint = AppTheme.colors.textPrimary
                     )
                 }
 
@@ -127,12 +120,12 @@ fun CreateReportScreen(
                         text = "Report Slope Hazard",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = AppTheme.colors.textPrimary
                     )
                     Text(
                         text = "Broadcast ground observations to early warning registry",
                         fontSize = 11.sp,
-                        color = Color.White.copy(alpha = 0.65f)
+                        color = AppTheme.colors.textSecondary
                     )
                 }
             }
@@ -149,7 +142,7 @@ fun CreateReportScreen(
                     text = "Select Incident Type",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = AppTheme.colors.textPrimary
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -223,7 +216,7 @@ fun CreateReportScreen(
                     text = "Incident Location",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = AppTheme.colors.textPrimary
                 )
 
                 Spacer(modifier = Modifier.height(6.dp))
@@ -232,21 +225,21 @@ fun CreateReportScreen(
                     value = locationName,
                     onValueChange = { locationName = it },
                     leadingIcon = {
-                        Icon(Icons.Default.LocationOn, contentDescription = null, tint = EmeraldAccent)
+                        Icon(Icons.Default.LocationOn, contentDescription = null, tint = AppTheme.colors.accent)
                     },
                     trailingIcon = {
                         IconButton(onClick = { locationName = "GPS: 25.5788° N, 91.8933° E (Shillong)" }) {
-                            Icon(Icons.Default.MyLocation, contentDescription = "Use GPS", tint = EmeraldAccent)
+                            Icon(Icons.Default.MyLocation, contentDescription = "Use GPS", tint = AppTheme.colors.accent)
                         }
                     },
                     shape = RoundedCornerShape(14.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = EmeraldAccent,
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.2f),
-                        focusedContainerColor = DarkGlassCard,
-                        unfocusedContainerColor = DarkGlassCard,
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White
+                        focusedBorderColor = AppTheme.colors.accent,
+                        unfocusedBorderColor = AppTheme.colors.cardBorder,
+                        focusedContainerColor = AppTheme.colors.card,
+                        unfocusedContainerColor = AppTheme.colors.card,
+                        focusedTextColor = AppTheme.colors.textPrimary,
+                        unfocusedTextColor = AppTheme.colors.textPrimary
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -258,7 +251,7 @@ fun CreateReportScreen(
                     text = "Report Title",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = AppTheme.colors.textPrimary
                 )
 
                 Spacer(modifier = Modifier.height(6.dp))
@@ -269,12 +262,12 @@ fun CreateReportScreen(
                     singleLine = true,
                     shape = RoundedCornerShape(14.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = EmeraldAccent,
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.2f),
-                        focusedContainerColor = DarkGlassCard,
-                        unfocusedContainerColor = DarkGlassCard,
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White
+                        focusedBorderColor = AppTheme.colors.accent,
+                        unfocusedBorderColor = AppTheme.colors.cardBorder,
+                        focusedContainerColor = AppTheme.colors.card,
+                        unfocusedContainerColor = AppTheme.colors.card,
+                        focusedTextColor = AppTheme.colors.textPrimary,
+                        unfocusedTextColor = AppTheme.colors.textPrimary
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -286,7 +279,7 @@ fun CreateReportScreen(
                     text = "Observations & Description",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = AppTheme.colors.textPrimary
                 )
 
                 Spacer(modifier = Modifier.height(6.dp))
@@ -298,12 +291,12 @@ fun CreateReportScreen(
                     maxLines = 5,
                     shape = RoundedCornerShape(14.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = EmeraldAccent,
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.2f),
-                        focusedContainerColor = DarkGlassCard,
-                        unfocusedContainerColor = DarkGlassCard,
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White
+                        focusedBorderColor = AppTheme.colors.accent,
+                        unfocusedBorderColor = AppTheme.colors.cardBorder,
+                        focusedContainerColor = AppTheme.colors.card,
+                        unfocusedContainerColor = AppTheme.colors.card,
+                        focusedTextColor = AppTheme.colors.textPrimary,
+                        unfocusedTextColor = AppTheme.colors.textPrimary
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -315,7 +308,7 @@ fun CreateReportScreen(
                     text = "Photo Evidence",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = AppTheme.colors.textPrimary
                 )
 
                 Spacer(modifier = Modifier.height(6.dp))
@@ -324,8 +317,8 @@ fun CreateReportScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
-                        .background(DarkGlassCard)
-                        .border(1.dp, if (hasPhotoAttached) EmeraldAccent else DarkGlassBorder, RoundedCornerShape(14.dp))
+                        .background(AppTheme.colors.card)
+                        .border(1.dp, if (hasPhotoAttached) AppTheme.colors.accent else AppTheme.colors.cardBorder, RoundedCornerShape(14.dp))
                         .clickable { hasPhotoAttached = !hasPhotoAttached }
                         .padding(16.dp),
                     contentAlignment = Alignment.Center
@@ -335,7 +328,7 @@ fun CreateReportScreen(
                             Icon(
                                 imageVector = Icons.Default.CheckCircle,
                                 contentDescription = null,
-                                tint = EmeraldAccent,
+                                tint = AppTheme.colors.accent,
                                 modifier = Modifier.size(24.dp)
                             )
                             Spacer(modifier = Modifier.width(10.dp))
@@ -344,12 +337,12 @@ fun CreateReportScreen(
                                     text = "slope_debris_inspection_01.jpg",
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White
+                                    color = AppTheme.colors.textPrimary
                                 )
                                 Text(
                                     text = "Attached (3.2 MB) • Tap to toggle",
                                     fontSize = 11.sp,
-                                    color = Color.White.copy(alpha = 0.6f)
+                                    color = AppTheme.colors.textTertiary
                                 )
                             }
                         }
@@ -358,14 +351,14 @@ fun CreateReportScreen(
                             Icon(
                                 imageVector = Icons.Default.AddPhotoAlternate,
                                 contentDescription = "Attach Photo",
-                                tint = EmeraldAccent,
+                                tint = AppTheme.colors.accent,
                                 modifier = Modifier.size(28.dp)
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = "Tap to attach camera photo or visual evidence",
                                 fontSize = 12.sp,
-                                color = Color.White.copy(alpha = 0.7f)
+                                color = AppTheme.colors.textSecondary
                             )
                         }
                     }
@@ -387,7 +380,7 @@ fun CreateReportScreen(
                         )
                         submittedReport = report
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = EmeraldAccent),
+                    colors = ButtonDefaults.buttonColors(containerColor = AppTheme.colors.accent),
                     shape = RoundedCornerShape(14.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -397,7 +390,7 @@ fun CreateReportScreen(
                         text = "Submit Local Incident Report",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF003822)
+                        color = AppTheme.colors.onAccent
                     )
                 }
 
@@ -411,8 +404,8 @@ fun CreateReportScreen(
             Dialog(onDismissRequest = { /* force action */ }) {
                 Surface(
                     shape = RoundedCornerShape(24.dp),
-                    color = Color(0xFF0F1E17),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, EmeraldAccent),
+                    color = AppTheme.colors.card,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, AppTheme.colors.accent),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
@@ -423,13 +416,13 @@ fun CreateReportScreen(
                             modifier = Modifier
                                 .size(56.dp)
                                 .clip(CircleShape)
-                                .background(EmeraldAccent.copy(alpha = 0.2f)),
+                                .background(AppTheme.colors.accentContainer),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.CheckCircle,
                                 contentDescription = null,
-                                tint = EmeraldAccent,
+                                tint = AppTheme.colors.accent,
                                 modifier = Modifier.size(36.dp)
                             )
                         }
@@ -440,7 +433,7 @@ fun CreateReportScreen(
                             text = "Report Submitted",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = AppTheme.colors.textPrimary
                         )
 
                         Spacer(modifier = Modifier.height(4.dp))
@@ -449,7 +442,7 @@ fun CreateReportScreen(
                             text = "Registered as ${rep.id}",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.ExtraBold,
-                            color = EmeraldAccent
+                            color = AppTheme.colors.accent
                         )
 
                         Spacer(modifier = Modifier.height(12.dp))
@@ -457,7 +450,7 @@ fun CreateReportScreen(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(DarkSurfaceElevated)
+                                .background(AppTheme.colors.surfaceElevated)
                                 .padding(horizontal = 14.dp, vertical = 8.dp)
                         ) {
                             Text(
@@ -473,7 +466,7 @@ fun CreateReportScreen(
                         Text(
                             text = "Your field report has been logged locally in the offline database and queued for verification by the Regional Geotechnical Response Unit.",
                             fontSize = 12.sp,
-                            color = Color.White.copy(alpha = 0.8f),
+                            color = AppTheme.colors.textSecondary,
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                             lineHeight = 16.sp
                         )
@@ -485,13 +478,13 @@ fun CreateReportScreen(
                                 submittedReport = null
                                 onBack()
                             },
-                            colors = ButtonDefaults.buttonColors(containerColor = EmeraldAccent),
+                            colors = ButtonDefaults.buttonColors(containerColor = AppTheme.colors.accent),
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
                                 text = "View in My Reports",
-                                color = Color(0xFF003822),
+                                color = AppTheme.colors.onAccent,
                                 fontWeight = FontWeight.Bold
                             )
                         }
@@ -513,10 +506,10 @@ private fun TypeSelectorChip(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(if (isSelected) EmeraldAccent.copy(alpha = 0.25f) else DarkGlassCard)
+            .background(if (isSelected) AppTheme.colors.accentContainer.copy(alpha = 0.5f) else AppTheme.colors.card)
             .border(
                 1.dp,
-                if (isSelected) EmeraldAccent else DarkGlassBorder,
+                if (isSelected) AppTheme.colors.accent else AppTheme.colors.cardBorder,
                 RoundedCornerShape(12.dp)
             )
             .clickable(onClick = onClick)
@@ -528,7 +521,7 @@ private fun TypeSelectorChip(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = if (isSelected) EmeraldAccent else Color.White.copy(alpha = 0.7f),
+                tint = if (isSelected) AppTheme.colors.accent else AppTheme.colors.textSecondary,
                 modifier = Modifier.size(18.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -536,7 +529,7 @@ private fun TypeSelectorChip(
                 text = type.displayName,
                 fontSize = 12.sp,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                color = if (isSelected) EmeraldAccent else Color.White
+                color = if (isSelected) AppTheme.colors.accent else AppTheme.colors.textPrimary
             )
         }
     }

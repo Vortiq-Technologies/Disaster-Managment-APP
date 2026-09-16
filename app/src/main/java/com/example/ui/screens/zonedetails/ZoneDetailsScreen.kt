@@ -25,11 +25,11 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.DeviceThermostat
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Opacity
 import androidx.compose.material.icons.filled.Sensors
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Thunderstorm
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -37,7 +37,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -58,10 +57,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.data.model.ShapFactor
 import com.example.data.model.ZoneRiskData
-import com.example.ui.theme.DarkCanvas
-import com.example.ui.theme.DarkGlassBorder
-import com.example.ui.theme.DarkGlassCard
-import com.example.ui.theme.DarkSurfaceElevated
+import com.example.ui.theme.AppTheme
 import com.example.ui.theme.EmeraldAccent
 import com.example.ui.theme.RiskCritical
 import com.example.ui.theme.RiskNormal
@@ -77,7 +73,7 @@ fun ZoneDetailsScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkCanvas)
+            .background(AppTheme.colors.canvas)
     ) {
         Column(
             modifier = Modifier
@@ -96,13 +92,13 @@ fun ZoneDetailsScreen(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(DarkGlassCard)
-                        .border(1.dp, DarkGlassBorder, CircleShape)
+                        .background(AppTheme.colors.card)
+                        .border(1.dp, AppTheme.colors.cardBorder, CircleShape)
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.White
+                        tint = AppTheme.colors.textPrimary
                     )
                 }
 
@@ -112,14 +108,14 @@ fun ZoneDetailsScreen(
                     Text(
                         text = "Risk Analysis",
                         fontSize = 13.sp,
-                        color = EmeraldAccent,
+                        color = AppTheme.colors.accent,
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
                         text = zone.name,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = AppTheme.colors.textPrimary
                     )
                 }
             }
@@ -135,8 +131,8 @@ fun ZoneDetailsScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF11221B)),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, DarkGlassBorder)
+                    colors = CardDefaults.cardColors(containerColor = AppTheme.colors.card),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, AppTheme.colors.cardBorder)
                 ) {
                     Column(
                         modifier = Modifier.padding(20.dp),
@@ -150,7 +146,7 @@ fun ZoneDetailsScreen(
                             Text(
                                 text = "${zone.district}, ${zone.state}",
                                 fontSize = 13.sp,
-                                color = Color.White.copy(alpha = 0.7f)
+                                color = AppTheme.colors.textSecondary
                             )
                             Box(
                                 modifier = Modifier
@@ -191,14 +187,14 @@ fun ZoneDetailsScreen(
                                     text = "${zone.riskScore}",
                                     fontSize = 42.sp,
                                     fontWeight = FontWeight.Black,
-                                    color = Color.White
+                                    color = AppTheme.colors.textPrimary
                                 )
                                 Text(
                                     text = "RISK INDEX",
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold,
                                     letterSpacing = 1.sp,
-                                    color = Color.White.copy(alpha = 0.7f)
+                                    color = AppTheme.colors.textSecondary
                                 )
                             }
                         }
@@ -215,7 +211,7 @@ fun ZoneDetailsScreen(
                         Text(
                             text = "Updated: ${zone.lastUpdated}",
                             fontSize = 12.sp,
-                            color = Color.White.copy(alpha = 0.6f)
+                            color = AppTheme.colors.textTertiary
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
@@ -224,7 +220,7 @@ fun ZoneDetailsScreen(
                         Button(
                             onClick = { showShapDialog = true },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = EmeraldAccent
+                                containerColor = AppTheme.colors.accent
                             ),
                             shape = RoundedCornerShape(14.dp),
                             modifier = Modifier.fillMaxWidth()
@@ -233,7 +229,7 @@ fun ZoneDetailsScreen(
                                 Icon(
                                     imageVector = Icons.Default.AutoAwesome,
                                     contentDescription = null,
-                                    tint = Color(0xFF003822),
+                                    tint = AppTheme.colors.onAccent,
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
@@ -241,7 +237,7 @@ fun ZoneDetailsScreen(
                                     text = "View SHAP Explanation",
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF003822)
+                                    color = AppTheme.colors.onAccent
                                 )
                             }
                         }
@@ -255,7 +251,7 @@ fun ZoneDetailsScreen(
                     text = "Geophysical Telemetry",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = AppTheme.colors.textPrimary
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -273,7 +269,7 @@ fun ZoneDetailsScreen(
                         modifier = Modifier.weight(1f)
                     )
                     TelemetryCard(
-                        icon = Icons.Default.WaterDrop,
+                        icon = Icons.Default.Opacity,
                         label = "Soil Moisture",
                         value = "${zone.soilMoisturePercent}% Saturation",
                         statusText = if (zone.soilMoisturePercent > 85) "Near Liquid Limit" else "Safe",
@@ -313,7 +309,7 @@ fun ZoneDetailsScreen(
                     text = "Key Instability Factors",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = AppTheme.colors.textPrimary
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -321,8 +317,8 @@ fun ZoneDetailsScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = DarkGlassCard),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, DarkGlassBorder)
+                    colors = CardDefaults.cardColors(containerColor = AppTheme.colors.card),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, AppTheme.colors.cardBorder)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         zone.riskFactors.forEach { factor ->
@@ -344,7 +340,7 @@ fun ZoneDetailsScreen(
                                 Text(
                                     text = factor,
                                     fontSize = 13.sp,
-                                    color = Color.White.copy(alpha = 0.9f)
+                                    color = AppTheme.colors.textPrimary
                                 )
                             }
                         }
@@ -358,7 +354,7 @@ fun ZoneDetailsScreen(
                     text = "Active Sensor Stations (${zone.nodes.size})",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = AppTheme.colors.textPrimary
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -369,8 +365,8 @@ fun ZoneDetailsScreen(
                             .fillMaxWidth()
                             .padding(vertical = 4.dp),
                         shape = RoundedCornerShape(14.dp),
-                        colors = CardDefaults.cardColors(containerColor = DarkGlassCard),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, DarkGlassBorder)
+                        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.card),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, AppTheme.colors.cardBorder)
                     ) {
                         Row(
                             modifier = Modifier
@@ -392,12 +388,12 @@ fun ZoneDetailsScreen(
                                         text = node.name,
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color.White
+                                        color = AppTheme.colors.textPrimary
                                     )
                                     Text(
                                         text = "Tilt: ${node.slopeTiltDeg}° • Pore: ${node.poreWaterPressureKpa} kPa",
                                         fontSize = 11.sp,
-                                        color = Color.White.copy(alpha = 0.65f)
+                                        color = AppTheme.colors.textSecondary
                                     )
                                 }
                             }
@@ -438,8 +434,8 @@ fun ShapExplanationDialog(
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = RoundedCornerShape(24.dp),
-            color = Color(0xFF0F1E18),
-            border = androidx.compose.foundation.BorderStroke(1.dp, DarkGlassBorder),
+            color = AppTheme.colors.card,
+            border = androidx.compose.foundation.BorderStroke(1.dp, AppTheme.colors.cardBorder),
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
@@ -457,7 +453,7 @@ fun ShapExplanationDialog(
                             Icon(
                                 imageVector = Icons.Default.AutoAwesome,
                                 contentDescription = null,
-                                tint = EmeraldAccent,
+                                tint = AppTheme.colors.accent,
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
@@ -465,13 +461,13 @@ fun ShapExplanationDialog(
                                 text = "SHAP Explainability",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = AppTheme.colors.textPrimary
                             )
                         }
                         Text(
                             text = "Feature Attribution for Score $riskScore/100",
                             fontSize = 12.sp,
-                            color = Color.White.copy(alpha = 0.65f)
+                            color = AppTheme.colors.textSecondary
                         )
                     }
                 }
@@ -481,7 +477,7 @@ fun ShapExplanationDialog(
                 Text(
                     text = "SHAP (SHapley Additive exPlanations) isolates the exact impact of each geophysical measurement on the predicted landslide probability.",
                     fontSize = 12.sp,
-                    color = Color.White.copy(alpha = 0.8f),
+                    color = AppTheme.colors.textPrimary,
                     lineHeight = 16.sp
                 )
 
@@ -498,7 +494,7 @@ fun ShapExplanationDialog(
                                 text = factor.featureName,
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Color.White
+                                color = AppTheme.colors.textPrimary
                             )
                             Text(
                                 text = if (factor.contributionPercent > 0) "+${factor.contributionPercent}% Risk" else "${factor.contributionPercent}% Risk",
@@ -517,7 +513,7 @@ fun ShapExplanationDialog(
                                 .height(6.dp)
                                 .clip(RoundedCornerShape(3.dp)),
                             color = if (factor.contributionPercent > 0) RiskCritical else RiskNormal,
-                            trackColor = Color.White.copy(alpha = 0.1f),
+                            trackColor = AppTheme.colors.surfaceElevated,
                             strokeCap = StrokeCap.Round
                         )
 
@@ -530,14 +526,14 @@ fun ShapExplanationDialog(
                             Text(
                                 text = factor.description,
                                 fontSize = 10.sp,
-                                color = Color.White.copy(alpha = 0.6f),
+                                color = AppTheme.colors.textSecondary,
                                 modifier = Modifier.weight(1f)
                             )
                             Text(
                                 text = "Value: ${factor.measuredValue}",
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Medium,
-                                color = EmeraldAccent
+                                color = AppTheme.colors.accent
                             )
                         }
                     }
@@ -547,13 +543,13 @@ fun ShapExplanationDialog(
 
                 Button(
                     onClick = onDismiss,
-                    colors = ButtonDefaults.buttonColors(containerColor = EmeraldAccent),
+                    colors = ButtonDefaults.buttonColors(containerColor = AppTheme.colors.accent),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
                         text = "Understood",
-                        color = Color(0xFF003822),
+                        color = AppTheme.colors.onAccent,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -574,28 +570,28 @@ private fun TelemetryCard(
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = DarkGlassCard),
-        border = androidx.compose.foundation.BorderStroke(1.dp, DarkGlassBorder)
+        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.card),
+        border = androidx.compose.foundation.BorderStroke(1.dp, AppTheme.colors.cardBorder)
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
             Icon(
                 imageVector = icon,
                 contentDescription = label,
-                tint = EmeraldAccent,
+                tint = AppTheme.colors.accent,
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = label,
                 fontSize = 11.sp,
-                color = Color.White.copy(alpha = 0.65f)
+                color = AppTheme.colors.textSecondary
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = value,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = AppTheme.colors.textPrimary
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(

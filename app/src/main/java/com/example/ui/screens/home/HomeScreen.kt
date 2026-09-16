@@ -1,12 +1,22 @@
 package com.example.ui.screens.home
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -28,7 +38,6 @@ import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Thunderstorm
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -39,18 +48,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import com.example.R
 import com.example.data.model.SensorNode
 import com.example.data.model.ZoneRiskData
@@ -60,14 +74,8 @@ import com.example.ui.components.BottomMetricChip
 import com.example.ui.components.MountainLogo
 import com.example.ui.components.MountainSlopeTelemetryView
 import com.example.ui.components.NodeDetailDialog
-import com.example.ui.components.RiskHUDCard
-import com.example.ui.theme.DarkGlassBorder
-import com.example.ui.theme.DarkGlassCard
+import com.example.ui.theme.AppTheme
 import com.example.ui.theme.EmeraldAccent
-import com.example.ui.theme.ForestGreenDark
-import com.example.ui.theme.ForestGreenPrimary
-import com.example.ui.theme.RiskCritical
-import com.example.ui.theme.RiskWatch
 
 @Composable
 fun HomeScreen(
@@ -88,6 +96,13 @@ fun HomeScreen(
     var showZoneDropdown by remember { mutableStateOf(false) }
     var rotationAngle by remember { mutableFloatStateOf(0f) }
 
+    val coroutineScope = rememberCoroutineScope()
+
+    // Smooth Animatable zoom and pan state for double-tap and pinch-to-zoom gestures
+    val scaleAnim = remember { Animatable(1f) }
+    val offsetXAnim = remember { Animatable(0f) }
+    val offsetYAnim = remember { Animatable(0f) }
+
     val animatedRotation by animateFloatAsState(
         targetValue = if (isRefreshing) rotationAngle + 360f else rotationAngle,
         animationSpec = tween(durationMillis = 800, easing = LinearEasing),
@@ -99,42 +114,138 @@ fun HomeScreen(
     ) {
         val isCompactHeight = maxHeight < 700.dp
         val isNarrowWidth = maxWidth < 380.dp
+        val containerWidth = constraints.maxWidth.toFloat()
+        val containerHeight = constraints.maxHeight.toFloat()
 
-        // Fullscreen Mountain Slope Background
-        Image(
-            painter = painterResource(id = R.drawable.bg_mountain_slope),
-            contentDescription = "Himalayan mountain slope terrain with active telemetry",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
+        val transformableState = rememberTransformableState { zoomChange, panChange, _ ->
+            val currentScale = scaleAnim.value
+            val newScale = (currentScale * zoomChange).coerceIn(1f, 3.5f)
+            val maxPanX = (containerWidth * (newScale - 1f)) / 2f
+            val maxPanY = (containerHeight * (newScale - 1f)) / 2f
+            coroutineScope.launch {
+                scaleAnim.snapTo(newScale)
+                val newX = if (newScale <= 1.01f) 0f else (offsetXAnim.value + panChange.x * newScale).coerceIn(-maxPanX, maxPanX)
+                val newY = if (newScale <= 1.01f) 0f else (offsetYAnim.value + panChange.y * newScale).coerceIn(-maxPanY, maxPanY)
+                offsetXAnim.snapTo(newX)
+                offsetYAnim.snapTo(newY)
+            }
+        }
 
-        // Subtle gradient vignette overlay to ensure text contrast
+        // Zoomable & Pannable Layer with native mobile double-tap zoom & pinch gestures
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xCC09140F),
-                            Color(0x33000000),
-                            Color(0x66000000),
-                            Color(0xE608120D)
+                .clipToBounds()
+                .transformable(state = transformableState)
+                .pointerInput(containerWidth, containerHeight) {
+                    detectTapGestures(
+                        onDoubleTap = { tapOffset ->
+                            coroutineScope.launch {
+                                if (scaleAnim.value > 1.2f) {
+                                    // Smoothly reset back to 1.0x original view on double tap
+                                    launch {
+                                        scaleAnim.animateTo(
+                                            targetValue = 1f,
+                                            animationSpec = tween(durationMillis = 320, easing = FastOutSlowInEasing)
+                                        )
+                                    }
+                                    launch {
+                                        offsetXAnim.animateTo(
+                                            targetValue = 0f,
+                                            animationSpec = tween(durationMillis = 320, easing = FastOutSlowInEasing)
+                                        )
+                                    }
+                                    launch {
+                                        offsetYAnim.animateTo(
+                                            targetValue = 0f,
+                                            animationSpec = tween(durationMillis = 320, easing = FastOutSlowInEasing)
+                                        )
+                                    }
+                                } else {
+                                    // Double tap to zoom in smoothly centered on the tapped location
+                                    val targetScale = 2.4f
+                                    val maxPanX = (containerWidth * (targetScale - 1f)) / 2f
+                                    val maxPanY = (containerHeight * (targetScale - 1f)) / 2f
+                                    val targetOffsetX = ((containerWidth / 2f - tapOffset.x) * (targetScale - 1f))
+                                        .coerceIn(-maxPanX, maxPanX)
+                                    val targetOffsetY = ((containerHeight / 2f - tapOffset.y) * (targetScale - 1f))
+                                        .coerceIn(-maxPanY, maxPanY)
+
+                                    launch {
+                                        scaleAnim.animateTo(
+                                            targetValue = targetScale,
+                                            animationSpec = tween(durationMillis = 320, easing = FastOutSlowInEasing)
+                                        )
+                                    }
+                                    launch {
+                                        offsetXAnim.animateTo(
+                                            targetValue = targetOffsetX,
+                                            animationSpec = tween(durationMillis = 320, easing = FastOutSlowInEasing)
+                                        )
+                                    }
+                                    launch {
+                                        offsetYAnim.animateTo(
+                                            targetValue = targetOffsetY,
+                                            animationSpec = tween(durationMillis = 320, easing = FastOutSlowInEasing)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    )
+                }
+                .graphicsLayer {
+                    scaleX = scaleAnim.value
+                    scaleY = scaleAnim.value
+                    translationX = offsetXAnim.value
+                    translationY = offsetYAnim.value
+                }
+        ) {
+            // Fullscreen Mountain Slope Background
+            Image(
+                painter = painterResource(id = R.drawable.bg_mountain_slope),
+                contentDescription = "Himalayan mountain slope terrain with active telemetry",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+
+            // Subtle gradient vignette overlay to ensure text and node contrast
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = if (AppTheme.colors.isDark) {
+                                listOf(
+                                    Color(0xCC09140F),
+                                    Color(0x33000000),
+                                    Color(0x66000000),
+                                    Color(0xE608120D)
+                                )
+                            } else {
+                                listOf(
+                                    Color(0xAA081A12),
+                                    Color(0x22000000),
+                                    Color(0x44000000),
+                                    Color(0xCC081A12)
+                                )
+                            }
                         )
                     )
-                )
-        )
+            )
 
-        // Interactive Telemetry Nodes & Telemetry Network Lines
-        MountainSlopeTelemetryView(
-            nodes = zone.nodes,
-            selectedNodeId = selectedNode?.id,
-            modifier = Modifier.fillMaxSize(),
-            onNodeClick = { node ->
-                onSelectNode(node)
-            }
-        )
+            // Interactive Telemetry Nodes & Telemetry Network Lines (zooms seamlessly with slope image)
+            MountainSlopeTelemetryView(
+                nodes = zone.nodes,
+                selectedNodeId = selectedNode?.id,
+                modifier = Modifier.fillMaxSize(),
+                onNodeClick = { node ->
+                    onSelectNode(node)
+                }
+            )
+        }
 
-        // UI Controls and Overlays
+        // Fixed UI Controls and Overlays
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -157,53 +268,87 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Offline Indicator Pill
-                    if (isOffline) {
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(20.dp))
-                                .background(Color(0xD9B45309))
-                                .padding(horizontal = 10.dp, vertical = 4.dp)
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    imageVector = Icons.Default.CloudOff,
-                                    contentDescription = "Offline Mode",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(12.dp)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    text = "OFFLINE",
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White
-                                )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        // Offline Indicator Pill
+                        if (isOffline) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .background(Color(0xD9B45309))
+                                    .padding(horizontal = 10.dp, vertical = 4.dp)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        imageVector = Icons.Default.CloudOff,
+                                        contentDescription = "Offline Mode",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(12.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = "OFFLINE",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
+                                    )
+                                }
+                            }
+                        } else {
+                            // Live Telemetry status
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .background(AppTheme.colors.card.copy(alpha = 0.85f))
+                                    .border(1.dp, AppTheme.colors.cardBorder, RoundedCornerShape(20.dp))
+                                    .padding(horizontal = 10.dp, vertical = 4.dp)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(7.dp)
+                                            .clip(CircleShape)
+                                            .background(EmeraldAccent)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = "LIVE TELEMETRY",
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        letterSpacing = 0.5.sp,
+                                        color = EmeraldAccent
+                                    )
+                                }
                             }
                         }
-                    } else {
-                        // Live Telemetry status
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(20.dp))
-                                .background(DarkGlassCard)
-                                .border(1.dp, DarkGlassBorder, RoundedCornerShape(20.dp))
-                                .padding(horizontal = 10.dp, vertical = 4.dp)
+
+                        // Subtle zoom indicator pill (appears only when zoomed in)
+                        AnimatedVisibility(
+                            visible = scaleAnim.value > 1.05f,
+                            enter = fadeIn() + scaleIn(),
+                            exit = fadeOut() + scaleOut()
                         ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(7.dp)
-                                        .clip(CircleShape)
-                                        .background(EmeraldAccent)
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .background(AppTheme.colors.card.copy(alpha = 0.85f))
+                                    .border(1.dp, AppTheme.colors.cardBorder, RoundedCornerShape(20.dp))
+                                    .clickable {
+                                        coroutineScope.launch {
+                                            launch { scaleAnim.animateTo(1f, tween(300, easing = FastOutSlowInEasing)) }
+                                            launch { offsetXAnim.animateTo(0f, tween(300, easing = FastOutSlowInEasing)) }
+                                            launch { offsetYAnim.animateTo(0f, tween(300, easing = FastOutSlowInEasing)) }
+                                        }
+                                    }
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
                                 Text(
-                                    text = "LIVE TELEMETRY",
+                                    text = String.format(java.util.Locale.US, "%.1fx", scaleAnim.value),
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
-                                    letterSpacing = 0.5.sp,
-                                    color = EmeraldAccent
+                                    color = AppTheme.colors.accent
                                 )
                             }
                         }
@@ -215,8 +360,8 @@ fun HomeScreen(
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(14.dp))
-                                    .background(DarkGlassCard)
-                                    .border(1.dp, DarkGlassBorder, RoundedCornerShape(14.dp))
+                                    .background(AppTheme.colors.card.copy(alpha = 0.85f))
+                                    .border(1.dp, AppTheme.colors.cardBorder, RoundedCornerShape(14.dp))
                                     .clickable { showZoneDropdown = true }
                                     .padding(horizontal = 10.dp, vertical = 6.dp)
                             ) {
@@ -232,7 +377,7 @@ fun HomeScreen(
                                         text = zone.name.substringBefore(" ("),
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.SemiBold,
-                                        color = Color.White
+                                        color = AppTheme.colors.textPrimary
                                     )
                                 }
                             }
@@ -275,12 +420,13 @@ fun HomeScreen(
                             modifier = Modifier
                                 .size(34.dp)
                                 .clip(CircleShape)
-                                .background(DarkGlassCard)
+                                .background(AppTheme.colors.card.copy(alpha = 0.85f))
+                                .border(1.dp, AppTheme.colors.cardBorder, CircleShape)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Refresh,
                                 contentDescription = "Refresh Telemetry",
-                                tint = Color.White,
+                                tint = AppTheme.colors.textPrimary,
                                 modifier = Modifier
                                     .size(18.dp)
                                     .rotate(animatedRotation)
@@ -289,21 +435,20 @@ fun HomeScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(if (isCompactHeight) 4.dp else 12.dp))
+                Spacer(modifier = Modifier.height(if (isCompactHeight) 12.dp else 20.dp))
 
-                // Brand Mountain Logo
+                // Brand Header Section
                 MountainLogo(
-                    size = if (isCompactHeight) 40.dp else 54.dp,
-                    mountainColor = ForestGreenPrimary,
+                    size = if (isCompactHeight) 38.dp else 48.dp,
+                    mountainColor = EmeraldAccent,
                     snowColor = Color.White
                 )
 
-                Spacer(modifier = Modifier.height(if (isCompactHeight) 2.dp else 4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
-                // LANDSLIDE Header
                 Text(
                     text = strings.titleLandslide,
-                    fontSize = if (isCompactHeight) 22.sp else 28.sp,
+                    fontSize = if (isCompactHeight) 24.sp else 30.sp,
                     fontWeight = FontWeight.Black,
                     letterSpacing = 2.sp,
                     color = Color.White
@@ -311,10 +456,10 @@ fun HomeScreen(
 
                 Text(
                     text = strings.subtitleEarlyWarning,
-                    fontSize = if (isCompactHeight) 11.sp else 13.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    letterSpacing = 1.5.sp,
-                    color = Color.White.copy(alpha = 0.9f)
+                    fontSize = if (isCompactHeight) 10.sp else 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 3.sp,
+                    color = EmeraldAccent
                 )
 
                 Spacer(modifier = Modifier.height(2.dp))
@@ -324,32 +469,11 @@ fun HomeScreen(
                     fontSize = if (isCompactHeight) 11.sp else 13.sp,
                     fontWeight = FontWeight.Normal,
                     letterSpacing = 1.sp,
-                    color = Color.White.copy(alpha = 0.75f)
+                    color = Color.White.copy(alpha = 0.85f)
                 )
             }
 
-            // Top-Left Floating HUD Card (matches Figma placement)
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-                contentAlignment = Alignment.TopStart
-            ) {
-                val normalCount = zone.nodes.count { it.status == com.example.data.model.RiskLevel.NORMAL }
-                val watchCount = zone.nodes.count { it.status == com.example.data.model.RiskLevel.WATCH }
-                val criticalCount = zone.nodes.count { it.status == com.example.data.model.RiskLevel.CRITICAL }
-
-                RiskHUDCard(
-                    riskLevel = zone.riskLevel,
-                    riskScore = zone.riskScore,
-                    normalCount = normalCount,
-                    watchCount = watchCount,
-                    criticalCount = criticalCount,
-                    offlineCount = 0,
-                    onClick = { onNavigateToZoneDetails(zone.id) }
-                )
-            }
-
+            // Spacious center area where the zoomable mountain slope and telemetry nodes shine
             Spacer(modifier = Modifier.weight(1f))
 
             // Lower Section: Prominent Alert Banner + Quick Metric Chips

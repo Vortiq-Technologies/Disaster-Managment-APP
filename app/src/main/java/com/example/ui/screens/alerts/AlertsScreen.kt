@@ -26,10 +26,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Campaign
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -56,10 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.data.model.AlertItem
 import com.example.data.model.AlertSeverity
-import com.example.ui.theme.DarkCanvas
-import com.example.ui.theme.DarkGlassBorder
-import com.example.ui.theme.DarkGlassCard
-import com.example.ui.theme.DarkSurfaceElevated
+import com.example.ui.theme.AppTheme
 import com.example.ui.theme.EmeraldAccent
 import com.example.ui.theme.RiskCritical
 import com.example.ui.theme.RiskNormal
@@ -87,7 +80,7 @@ fun AlertsScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkCanvas)
+            .background(AppTheme.colors.canvas)
     ) {
         Column(
             modifier = Modifier
@@ -107,19 +100,19 @@ fun AlertsScreen(
                         text = "Early Warning Alerts",
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = AppTheme.colors.textPrimary
                     )
                     Text(
                         text = "Real-time geotechnical hazard notifications",
                         fontSize = 12.sp,
-                        color = Color.White.copy(alpha = 0.7f)
+                        color = AppTheme.colors.textSecondary
                     )
                 }
 
                 // Simulate Notification Button
                 Button(
                     onClick = { onTriggerNotification(context) },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0x33F87171)),
+                    colors = ButtonDefaults.buttonColors(containerColor = RiskCritical.copy(alpha = 0.15f)),
                     border = androidx.compose.foundation.BorderStroke(1.dp, RiskCritical),
                     shape = RoundedCornerShape(12.dp),
                     contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 10.dp, vertical = 6.dp)
@@ -143,8 +136,8 @@ fun AlertsScreen(
             // Tabs: Active Alerts vs Alert History
             TabRow(
                 selectedTabIndex = selectedTab,
-                containerColor = Color(0xFF0F1E17),
-                contentColor = EmeraldAccent,
+                containerColor = AppTheme.colors.surfaceElevated,
+                contentColor = AppTheme.colors.accent,
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 Tab(
@@ -153,7 +146,8 @@ fun AlertsScreen(
                     text = {
                         Text(
                             text = "Active Alerts (${alerts.count { it.severity == AlertSeverity.CRITICAL || it.severity == AlertSeverity.HIGH }})",
-                            fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Normal
+                            fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Normal,
+                            color = if (selectedTab == 0) AppTheme.colors.accent else AppTheme.colors.textSecondary
                         )
                     }
                 )
@@ -163,7 +157,8 @@ fun AlertsScreen(
                     text = {
                         Text(
                             text = "All History (${alerts.size})",
-                            fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Normal
+                            fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Normal,
+                            color = if (selectedTab == 1) AppTheme.colors.accent else AppTheme.colors.textSecondary
                         )
                     }
                 )
@@ -247,8 +242,8 @@ fun AlertsScreen(
             Dialog(onDismissRequest = { selectedAlert = null }) {
                 Surface(
                     shape = RoundedCornerShape(20.dp),
-                    color = Color(0xFF10211A),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, DarkGlassBorder),
+                    color = AppTheme.colors.card,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, AppTheme.colors.cardBorder),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
@@ -278,7 +273,7 @@ fun AlertsScreen(
                             Text(
                                 text = alert.timestamp,
                                 fontSize = 11.sp,
-                                color = Color.White.copy(alpha = 0.6f)
+                                color = AppTheme.colors.textTertiary
                             )
                         }
 
@@ -288,13 +283,13 @@ fun AlertsScreen(
                             text = alert.title,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = AppTheme.colors.textPrimary
                         )
 
                         Text(
                             text = alert.region,
                             fontSize = 13.sp,
-                            color = EmeraldAccent,
+                            color = AppTheme.colors.accent,
                             fontWeight = FontWeight.Medium
                         )
 
@@ -303,7 +298,7 @@ fun AlertsScreen(
                         Text(
                             text = alert.message,
                             fontSize = 13.sp,
-                            color = Color.White.copy(alpha = 0.9f),
+                            color = AppTheme.colors.textPrimary,
                             lineHeight = 18.sp
                         )
 
@@ -314,8 +309,8 @@ fun AlertsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(DarkSurfaceElevated)
-                                .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(12.dp))
+                                .background(AppTheme.colors.surfaceElevated)
+                                .border(1.dp, AppTheme.colors.cardBorder, RoundedCornerShape(12.dp))
                                 .padding(12.dp)
                         ) {
                             Column {
@@ -329,7 +324,7 @@ fun AlertsScreen(
                                 Text(
                                     text = alert.actionableAdvice,
                                     fontSize = 12.sp,
-                                    color = Color.White.copy(alpha = 0.9f),
+                                    color = AppTheme.colors.textPrimary,
                                     lineHeight = 16.sp
                                 )
                             }
@@ -343,11 +338,11 @@ fun AlertsScreen(
                         ) {
                             Button(
                                 onClick = { selectedAlert = null },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.1f)),
+                                colors = ButtonDefaults.buttonColors(containerColor = AppTheme.colors.surfaceElevated),
                                 shape = RoundedCornerShape(12.dp),
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text("Dismiss", color = Color.White)
+                                Text("Dismiss", color = AppTheme.colors.textPrimary)
                             }
 
                             if (alert.zoneId != null) {
@@ -357,11 +352,11 @@ fun AlertsScreen(
                                         selectedAlert = null
                                         onNavigateToZone(zid)
                                     },
-                                    colors = ButtonDefaults.buttonColors(containerColor = EmeraldAccent),
+                                    colors = ButtonDefaults.buttonColors(containerColor = AppTheme.colors.accent),
                                     shape = RoundedCornerShape(12.dp),
                                     modifier = Modifier.weight(1.2f)
                                 ) {
-                                    Text("View Zone", color = Color(0xFF003822), fontWeight = FontWeight.Bold)
+                                    Text("View Zone", color = AppTheme.colors.onAccent, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
@@ -382,8 +377,8 @@ private fun AlertCard(
             .fillMaxWidth()
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = DarkGlassCard),
-        border = androidx.compose.foundation.BorderStroke(1.dp, alert.severity.color.copy(alpha = 0.4f))
+        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.card),
+        border = androidx.compose.foundation.BorderStroke(1.dp, alert.severity.color.copy(alpha = 0.45f))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -409,14 +404,14 @@ private fun AlertCard(
                     Text(
                         text = alert.region,
                         fontSize = 12.sp,
-                        color = Color.White.copy(alpha = 0.7f)
+                        color = AppTheme.colors.textSecondary
                     )
                 }
 
                 Text(
                     text = alert.timestamp.substringAfter(", "),
                     fontSize = 11.sp,
-                    color = Color.White.copy(alpha = 0.6f)
+                    color = AppTheme.colors.textTertiary
                 )
             }
 
@@ -426,7 +421,7 @@ private fun AlertCard(
                 text = alert.title,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = AppTheme.colors.textPrimary
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -434,7 +429,7 @@ private fun AlertCard(
             Text(
                 text = alert.message,
                 fontSize = 12.sp,
-                color = Color.White.copy(alpha = 0.8f),
+                color = AppTheme.colors.textSecondary,
                 maxLines = 2
             )
 
@@ -448,12 +443,13 @@ private fun AlertCard(
                 Text(
                     text = "Tap to view instructions",
                     fontSize = 11.sp,
-                    color = EmeraldAccent
+                    color = AppTheme.colors.accent,
+                    fontWeight = FontWeight.SemiBold
                 )
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                     contentDescription = null,
-                    tint = Color.White.copy(alpha = 0.4f),
+                    tint = AppTheme.colors.textTertiary,
                     modifier = Modifier.size(12.dp)
                 )
             }
@@ -471,10 +467,10 @@ private fun FilterChip(
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(if (isSelected) color.copy(alpha = 0.25f) else DarkGlassCard)
+            .background(if (isSelected) color.copy(alpha = 0.22f) else AppTheme.colors.card)
             .border(
                 1.dp,
-                if (isSelected) color else DarkGlassBorder,
+                if (isSelected) color else AppTheme.colors.cardBorder,
                 RoundedCornerShape(12.dp)
             )
             .clickable(onClick = onClick)
@@ -484,7 +480,7 @@ private fun FilterChip(
             text = label,
             fontSize = 11.sp,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-            color = if (isSelected) color else Color.White.copy(alpha = 0.8f)
+            color = if (isSelected) color else AppTheme.colors.textSecondary
         )
     }
 }
